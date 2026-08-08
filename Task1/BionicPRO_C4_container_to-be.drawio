@@ -1,0 +1,193 @@
+<mxfile host="app.diagrams.net" agent="architecture-bionicpro" type="device">
+  <diagram id="bionicpro-c4-container-to-be" name="C4 Container - BionicPRO to-be">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ===== Границы (boundaries) ===== -->
+        <mxCell id="bnd_clients" value="Клиентские приложения (устройства пользователя)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#999999;verticalAlign=top;fontStyle=2;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="270" y="160" width="520" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="bnd_perimeter" value="Периметр BionicPRO — региональный контур страны представительства (данные ПДн/мед. не покидают юрисдикцию)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#666666;verticalAlign=top;fontStyle=2;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="270" y="410" width="1060" height="700" as="geometry" />
+        </mxCell>
+        <mxCell id="bnd_idp" value="Внешние удостоверяющие службы (по странам)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#D79B00;verticalAlign=top;fontStyle=2;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="410" width="250" height="410" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Акторы ===== -->
+        <mxCell id="pilot" value="&lt;b&gt;Пилот протеза&lt;/b&gt;&lt;div&gt;[Person]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Донастраивает протез, запрашивает отчёт о его работе&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="60" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="staff" value="&lt;b&gt;Сотрудник BionicPRO&lt;/b&gt;&lt;div&gt;[Person]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Продажи, производство, ML&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="60" width="190" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Существующие контейнеры ===== -->
+        <mxCell id="chip" value="&lt;b&gt;Программа в чипе протеза&lt;/b&gt;&lt;div&gt;[Container: ESP32, C++]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Распознаёт миосигналы (&amp;lt;100 мс), шлёт телеметрию по 4G&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="210" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="mobile" value="&lt;b&gt;Мобильное приложение&lt;/b&gt;&lt;div&gt;[Container: Android / iOS]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Донастройка протеза, скачивание отчёта&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="295" y="210" width="215" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="spa" value="&lt;b&gt;Reports SPA&lt;/b&gt; &lt;i&gt;(изменён)&lt;/i&gt;&lt;div&gt;[Container: React 18, TS, keycloak-js]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Authorization Code + &lt;b&gt;PKCE S256&lt;/b&gt;; токенов IdP не хранит&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="545" y="210" width="220" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Новое: BFF и хранилище сессий ===== -->
+        <mxCell id="bff" value="&lt;b&gt;BFF / Auth Gateway&lt;/b&gt; &lt;i&gt;(новый)&lt;/i&gt;&lt;div&gt;[Container: Node.js / Spring, confidential client]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Обмен code→токены, хранит токены на сервере, отдаёт браузеру только httpOnly-cookie&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="460" width="240" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="redis" value="&lt;b&gt;Session &amp;amp; Token Store&lt;/b&gt; &lt;i&gt;(новый)&lt;/i&gt;&lt;div&gt;[Container: Redis, TTL]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;session_id → access/refresh токены, шифрование at-rest&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="630" width="240" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Бэкенд-контейнеры ===== -->
+        <mxCell id="reports" value="&lt;b&gt;Reports API&lt;/b&gt; &lt;i&gt;(новый)&lt;/i&gt;&lt;div&gt;[Container: сервис отчётов]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;RBAC: роль prothetic_user + фильтр по patient_id из токена&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="460" width="200" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="crm" value="&lt;b&gt;CRM&lt;/b&gt;&lt;div&gt;[Container]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Пациенты, заказы, протезы&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="460" width="190" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="shop" value="&lt;b&gt;Интернет-магазин&lt;/b&gt;&lt;div&gt;[Container]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Заказ и оплата протеза&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="460" width="190" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="clickhouse" value="&lt;b&gt;ClickHouse&lt;/b&gt; &lt;i&gt;(доп.)&lt;/i&gt;&lt;div&gt;[Container: OLAP]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Телеметрия и агрегаты для отчётов&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="630" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="pgcrm" value="&lt;b&gt;PostgreSQL (CRM)&lt;/b&gt;&lt;div&gt;[Container: OLTP]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;ПДн и мед. данные пациентов&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="630" width="190" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="airflow" value="&lt;b&gt;Apache Airflow&lt;/b&gt; &lt;i&gt;(доп.)&lt;/i&gt;&lt;div&gt;[Container: ETL]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Регулярная выгрузка CRM → ClickHouse&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="630" width="190" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Слой идентификации ===== -->
+        <mxCell id="keycloak" value="&lt;b&gt;Keycloak&lt;/b&gt; &lt;i&gt;(изменён)&lt;/i&gt;&lt;div&gt;[Container: IdP + Identity Broker]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Realm страны, PKCE S256 обязателен, RBAC, брокеринг внешних IdP, User Federation&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="790" width="240" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="kcdb" value="&lt;b&gt;PostgreSQL (Keycloak)&lt;/b&gt;&lt;div&gt;[Container]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Сессии, клиенты, роли&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="580" y="790" width="200" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="ldap" value="&lt;b&gt;LDAP / AD страны представительства&lt;/b&gt; &lt;i&gt;(новый)&lt;/i&gt;&lt;div&gt;[Container: внешний источник УЗ]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Учётные записи и пароли хранятся локально, в юрисдикции&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="820" y="790" width="190" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="telemetry" value="&lt;b&gt;Telemetry Gateway&lt;/b&gt;&lt;div&gt;[Container: MQTT/TLS + Kafka]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Приём миосигналов в реальном времени; opt-out пользователя&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="790" width="190" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="audit" value="&lt;b&gt;Аудит и мониторинг доступа&lt;/b&gt; &lt;i&gt;(доп.)&lt;/i&gt;&lt;div&gt;[Container: OpenTelemetry + SIEM]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;События входа/отказов, алерт на массовую выгрузку ПДн&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="970" width="240" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Внешние IdP ===== -->
+        <mxCell id="esia" value="&lt;b&gt;ЕСИА (РФ)&lt;/b&gt;&lt;div&gt;[External IdP: OIDC]&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="460" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="eidas" value="&lt;b&gt;Национальный IdP (ЕС, eIDAS)&lt;/b&gt;&lt;div&gt;[External IdP: OIDC / SAML]&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="580" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="clinic" value="&lt;b&gt;IdP клиники-партнёра&lt;/b&gt;&lt;div&gt;[External IdP: SAML 2.0]&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1390" y="700" width="210" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Связи ===== -->
+        <mxCell id="e1" value="Использует протез" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="pilot" target="chip">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="Донастройка, отчёт [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="pilot" target="mobile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="Личный кабинет отчётов [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="pilot" target="spa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="Телеметрия миосигналов [4G, MQTT over TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="chip" target="telemetry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="Login / API [HTTPS, httpOnly cookie SameSite=Strict]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="spa" target="bff">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="OIDC PKCE S256 + REST [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="mobile" target="bff">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="Authorization Code + PKCE (S256), обмен code→токены, refresh [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="bff" target="keycloak">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="Хранит токены по session_id [TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="bff" target="redis">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="REST + Bearer (access token из хранилища)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="bff" target="reports">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="Проверка подписи JWT (JWKS), роли" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;" edge="1" parent="1" source="reports" target="keycloak">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="Данные пациента и протезов [REST]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="reports" target="crm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="Агрегаты телеметрии [SQL]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="reports" target="clickhouse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="[JDBC]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="crm" target="pgcrm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="ETL CRM → ClickHouse" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="airflow" target="pgcrm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="Запись витрин" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="airflow" target="clickhouse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="Поток телеметрии" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="telemetry" target="clickhouse">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="[JDBC]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="keycloak" target="kcdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="User Federation [LDAPS, read-only], пароли не покидают страну" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="keycloak" target="ldap">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="Identity Brokering [OIDC]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="keycloak" target="esia">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" value="Identity Brokering [OIDC/SAML]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="keycloak" target="eidas">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" value="Identity Brokering [SAML 2.0]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="keycloak" target="clinic">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" value="Заказ и оплата протеза [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="staff" target="crm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" value="Сделки, статусы производства" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="shop" target="crm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e24" value="События аутентификации и доступа [OTLP]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;strokeColor=#D79B00;" edge="1" parent="1" source="keycloak" target="audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="Логи выдачи отчётов [OTLP]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;strokeColor=#D79B00;" edge="1" parent="1" source="bff" target="audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="&lt;b&gt;Легенда&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;verticalAlign=top;align=left;spacingLeft=8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="850" width="200" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" value="существующий контейнер (as-is)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="880" width="170" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" value="новый контейнер — безопасная работа с токенами" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="926" width="170" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" value="новый/внешний — федерация УЗ и локализация данных" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="980" width="170" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" value="изменённый существующий контейнер" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="55" y="1034" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="title" value="&lt;b&gt;BionicPRO — C4 Container, целевое состояние (to-be)&lt;/b&gt;&lt;div style=&quot;font-size:11px&quot;&gt;Задание 1, Задача 1: управление учётными данными, BFF-паттерн, федерация внешних IdP. Дата: 08-08-2026&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="900" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

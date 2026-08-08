@@ -113,17 +113,33 @@
       {
         "clientId": "reports-frontend",
         "enabled": true,
+        "protocol": "openid-connect",
         "publicClient": true,
+        "standardFlowEnabled": true,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": false,
+        "serviceAccountsEnabled": false,
+        "rootUrl": "http://localhost:3000",
+        "baseUrl": "/",
         "redirectUris": ["http://localhost:3000/*"],
         "webOrigins": ["http://localhost:3000"],
-        "directAccessGrantsEnabled": true
+        "attributes": {
+          "pkce.code.challenge.method": "S256",
+          "post.logout.redirect.uris": "http://localhost:3000/*",
+          "access.token.lifespan": "300"
+        }
       },
       {
         "clientId": "reports-api",
         "enabled": true,
+        "protocol": "openid-connect",
         "clientAuthenticatorType": "client-secret",
-        "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq", 
-        "bearerOnly": true
+        "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq",
+        "bearerOnly": true,
+        "publicClient": false,
+        "standardFlowEnabled": false,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": false
       }
     ]
   }
