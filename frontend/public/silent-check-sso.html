@@ -1,0 +1,9 @@
+<html>
+  <body>
+    <script>
+      // Требуется keycloak-js для silentCheckSsoRedirectUri: страница только
+      // пересылает результат проверки SSO-сессии родительскому окну.
+      parent.postMessage(location.href, location.origin);
+    </script>
+  </body>
+</html>

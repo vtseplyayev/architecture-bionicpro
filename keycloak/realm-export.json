@@ -69,6 +69,9 @@
         "email": "prothetic1@example.com",
         "firstName": "Prothetic",
         "lastName": "One",
+        "attributes": {
+          "bionic_client_id": ["1001"]
+        },
         "credentials": [
           {
             "type": "password",
@@ -84,6 +87,9 @@
         "email": "prothetic2@example.com",
         "firstName": "Prothetic",
         "lastName": "Two",
+        "attributes": {
+          "bionic_client_id": ["1002"]
+        },
         "credentials": [
           {
             "type": "password",
@@ -99,6 +105,9 @@
         "email": "prothetic3@example.com",
         "firstName": "Prothetic",
         "lastName": "Three",
+        "attributes": {
+          "bionic_client_id": ["1003"]
+        },
         "credentials": [
           {
             "type": "password",
@@ -113,17 +122,60 @@
       {
         "clientId": "reports-frontend",
         "enabled": true,
+        "protocol": "openid-connect",
         "publicClient": true,
+        "standardFlowEnabled": true,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": false,
+        "serviceAccountsEnabled": false,
+        "rootUrl": "http://localhost:3000",
+        "baseUrl": "/",
         "redirectUris": ["http://localhost:3000/*"],
         "webOrigins": ["http://localhost:3000"],
-        "directAccessGrantsEnabled": true
+        "attributes": {
+          "pkce.code.challenge.method": "S256",
+          "post.logout.redirect.uris": "http://localhost:3000/*",
+          "access.token.lifespan": "300"
+        },
+        "protocolMappers": [
+          {
+            "name": "bionic-client-id",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-usermodel-attribute-mapper",
+            "consentRequired": false,
+            "config": {
+              "user.attribute": "bionic_client_id",
+              "claim.name": "bionic_client_id",
+              "jsonType.label": "long",
+              "id.token.claim": "true",
+              "access.token.claim": "true",
+              "userinfo.token.claim": "true"
+            }
+          },
+          {
+            "name": "audience-reports-api",
+            "protocol": "openid-connect",
+            "protocolMapper": "oidc-audience-mapper",
+            "consentRequired": false,
+            "config": {
+              "included.client.audience": "reports-api",
+              "id.token.claim": "false",
+              "access.token.claim": "true"
+            }
+          }
+        ]
       },
       {
         "clientId": "reports-api",
         "enabled": true,
+        "protocol": "openid-connect",
         "clientAuthenticatorType": "client-secret",
-        "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq", 
-        "bearerOnly": true
+        "secret": "oNwoLQdvJAvRcL89SydqCWCe5ry1jMgq",
+        "bearerOnly": true,
+        "publicClient": false,
+        "standardFlowEnabled": false,
+        "implicitFlowEnabled": false,
+        "directAccessGrantsEnabled": false
       }
     ]
   }

@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # ===================== Идентификация =====================
   keycloak_db:
     image: postgres:14
     environment:
@@ -11,6 +10,12 @@ services:
       - ./postgres-keycloak-data:/var/lib/postgresql/data
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak_user -d keycloak_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   keycloak:
     image: quay.io/keycloak/keycloak:21.1
     environment:
@@ -20,7 +25,7 @@ services:
       KC_DB_URL: jdbc:postgresql://keycloak_db:5432/keycloak_db
       KC_DB_USERNAME: keycloak_user
       KC_DB_PASSWORD: keycloak_password
-    command: 
+    command:
       - start-dev
       - --import-realm
     volumes:
@@ -28,7 +33,124 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - keycloak_db
+      keycloak_db:
+        condition: service_healthy
+
+  # ===================== Источник: CRM (OLTP) =====================
+  crm_db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: crm_db
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: crm_password
+    volumes:
+      - crm-data:/var/lib/postgresql/data
+      - ./crm/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crm_user -d crm_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ===================== OLAP: витрина отчётности =====================
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3-alpine
+    environment:
+      CLICKHOUSE_DB: bionic
+      # Нужно, чтобы init-скрипт мог завести read-only пользователя для Reports API.
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ./clickhouse/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --query 'SELECT 1' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  # ===================== ETL: Apache Airflow =====================
+  airflow_db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: airflow
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+    volumes:
+      - airflow-db-data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow -d airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  airflow:
+    image: apache/airflow:2.9.3-python3.11
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow_db:5432/airflow
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      AIRFLOW__WEBSERVER__WORKERS: "2"
+      AIRFLOW__WEBSERVER__SECRET_KEY: bionicpro-dev-secret
+      CLICKHOUSE_URL: http://clickhouse:8123/
+      CRM_DSN: host=crm_db port=5432 dbname=crm_db user=crm_user password=crm_password
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags:ro
+      - airflow-logs:/opt/airflow/logs
+    ports:
+      - "8081:8080"
+    depends_on:
+      airflow_db:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+      crm_db:
+        condition: service_healthy
+    command:
+      - bash
+      - -c
+      - |
+        airflow db migrate
+        airflow users create --username admin --password admin \
+          --firstname Admin --lastname User --role Admin --email admin@example.com || true
+        airflow scheduler &
+        exec airflow webserver
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 90s
+
+  # ===================== Сервис отчётов =====================
+  reports-api:
+    build:
+      context: ./reports-api
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ClickHouse__Url: http://clickhouse:8123/
+      Keycloak__MetadataAddress: http://keycloak:8080/realms/reports-realm/.well-known/openid-configuration
+    ports:
+      - "8000:8000"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+
+  # ===================== Фронтенд =====================
   frontend:
     build:
       context: ./frontend
@@ -40,3 +162,9 @@ services:
       REACT_APP_KEYCLOAK_URL: http://localhost:8080
       REACT_APP_KEYCLOAK_REALM: reports-realm
       REACT_APP_KEYCLOAK_CLIENT_ID: reports-frontend
+
+volumes:
+  crm-data:
+  clickhouse-data:
+  airflow-db-data:
+  airflow-logs:
