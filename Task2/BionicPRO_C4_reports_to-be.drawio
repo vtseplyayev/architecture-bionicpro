@@ -1,0 +1,144 @@
+<mxfile host="app.diagrams.net" agent="architecture-bionicpro" type="device">
+  <diagram id="bionicpro-c4-reports-to-be" name="C4 Container - Reports to-be">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="&lt;b&gt;BionicPRO — C4 Container: сервис отчётов и ETL (to-be)&lt;/b&gt;&lt;div style=&quot;font-size:11px&quot;&gt;Задание 2, Задача 1. Витрина в OLAP готовится Airflow по расписанию; API отдаёт готовый отчёт только по собственным протезам пользователя. Дата: 08-08-2026&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="300" y="20" width="1000" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Границы ===== -->
+        <mxCell id="bnd_clients" value="Клиентские приложения" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#999999;verticalAlign=top;fontStyle=2;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="300" y="130" width="500" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="bnd_reports" value="Контур отчётности (региональный периметр BionicPRO)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;fillColor=none;strokeColor=#666666;verticalAlign=top;fontStyle=2;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="290" y="350" width="1020" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="bnd_ch" value="ClickHouse (OLAP)" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=4 4;fillColor=none;strokeColor=#D79B00;verticalAlign=top;fontStyle=2;fontSize=12;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="610" y="380" width="440" height="290" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Актор ===== -->
+        <mxCell id="pilot" value="&lt;b&gt;Пилот протеза&lt;/b&gt;&lt;div&gt;[Person]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Запрашивает отчёт о работе своих протезов&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="60" y="150" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Клиенты ===== -->
+        <mxCell id="spa" value="&lt;b&gt;Reports SPA&lt;/b&gt; &lt;i&gt;(изменён)&lt;/i&gt;&lt;div&gt;[React 18, TS]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Кнопка «Получить отчёт», выбор периода, выгрузка JSON&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="165" width="220" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="mobile" value="&lt;b&gt;Мобильное приложение&lt;/b&gt;&lt;div&gt;[Android / iOS]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Тот же контракт /reports&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="165" width="220" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="keycloak" value="&lt;b&gt;Keycloak&lt;/b&gt;&lt;div&gt;[IdP: OIDC, PKCE S256]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Роль prothetic_user, claim bionic_client_id, aud=reports-api&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="150" width="230" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Сервис отчётов ===== -->
+        <mxCell id="api" value="&lt;b&gt;Reports API&lt;/b&gt; &lt;i&gt;(новый)&lt;/i&gt;&lt;div&gt;[C#, .NET 10, Minimal API]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;GET /reports — отчёт по себе&lt;br&gt;RBAC + скоуп по claim + проверка водяного знака&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="400" width="250" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ClickHouse ===== -->
+        <mxCell id="ch_raw" value="&lt;b&gt;telemetry_events&lt;/b&gt;&lt;div style=&quot;font-size:10px&quot;&gt;сырая телеметрия, MergeTree, TTL 90 дней&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="420" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ch_dims" value="&lt;b&gt;dim_clients / dim_prostheses&lt;/b&gt;&lt;div style=&quot;font-size:10px&quot;&gt;измерения из CRM, ReplacingMergeTree&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="840" y="420" width="190" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="ch_mart" value="&lt;b&gt;report_daily_by_client&lt;/b&gt;&lt;div style=&quot;font-size:10px&quot;&gt;ВИТРИНА: сутки × клиент&lt;br&gt;ORDER BY (client_id, report_date)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="630" y="540" width="190" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="ch_wm" value="&lt;b&gt;etl_watermark&lt;/b&gt;&lt;div style=&quot;font-size:10px&quot;&gt;граница обработанного периода&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="840" y="540" width="190" height="105" as="geometry" />
+        </mxCell>
+
+        <!-- ===== ETL и источники ===== -->
+        <mxCell id="airflow" value="&lt;b&gt;Apache Airflow&lt;/b&gt; &lt;i&gt;(новый)&lt;/i&gt;&lt;div&gt;[ETL, LocalExecutor]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;DAG bionicpro_reports_etl&lt;br&gt;расписание 0 2 * * * (сутки D-1)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="320" y="710" width="250" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="crm" value="&lt;b&gt;CRM&lt;/b&gt;&lt;div&gt;[Container]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Пациенты, протезы, договоры&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="630" y="710" width="190" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="crmdb" value="&lt;b&gt;PostgreSQL (CRM)&lt;/b&gt;&lt;div&gt;[OLTP]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;ПДн и мед. данные — в OLAP уходит минимум&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="840" y="710" width="190" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="gw" value="&lt;b&gt;Telemetry Gateway&lt;/b&gt;&lt;div&gt;[MQTT/TLS]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Приём миосигналов в реальном времени&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="710" width="190" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="chip" value="&lt;b&gt;Программа в чипе протеза&lt;/b&gt;&lt;div&gt;[ESP32, C++]&lt;/div&gt;&lt;div style=&quot;font-size:10px&quot;&gt;Шлёт телеметрию по 4G&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="710" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Связи ===== -->
+        <mxCell id="r1" value="Нажимает «Получить отчёт»" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="pilot" target="spa">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="Вход: OIDC Authorization Code + PKCE S256" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#B85450;" edge="1" parent="1" source="spa" target="keycloak">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="GET /reports?from&amp;amp;to&lt;br&gt;Authorization: Bearer [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="spa" target="api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="GET /reports [HTTPS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;" edge="1" parent="1" source="mobile" target="api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r5" value="Проверка подписи JWT (JWKS),&lt;br&gt;роль prothetic_user, aud, claim bionic_client_id" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;strokeColor=#B85450;" edge="1" parent="1" source="api" target="keycloak">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r6" value="SELECT ... WHERE client_id = &lt;из токена&gt;&lt;br&gt;[HTTP, read-only пользователь]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;strokeWidth=2;" edge="1" parent="1" source="api" target="ch_mart">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r7" value="Проверка готовности периода" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#82B366;" edge="1" parent="1" source="api" target="ch_wm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dims" value="E: clients, prostheses [psycopg2]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="airflow" target="crmdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_load" value="L: загрузка измерений&lt;br&gt;JSONEachRow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="airflow" target="ch_dims">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_mart" value="T+L: агрегация телеметрии&lt;br&gt;в разрезе клиентов (push-down)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="airflow" target="ch_mart">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_wm" value="Двигает границу&lt;br&gt;готовности данных" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;strokeColor=#D79B00;strokeWidth=2;" edge="1" parent="1" source="airflow" target="ch_wm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_check" value="Проверка наличия сырья за сутки" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;dashed=1;strokeColor=#D79B00;" edge="1" parent="1" source="airflow" target="ch_raw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_crm" value="[JDBC]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="crm" target="crmdb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gw" value="Телеметрия [4G, MQTT/TLS]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="chip" target="gw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gw2" value="Поток событий" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;fontSize=10;" edge="1" parent="1" source="gw" target="ch_raw">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ===== Легенда ===== -->
+        <mxCell id="legend" value="&lt;b&gt;Легенда&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#333333;verticalAlign=top;align=left;spacingLeft=8;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="200" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="lg1" value="существующий контейнер (as-is)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="430" width="170" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="lg2" value="новый — сервис отчётов и витрина" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="476" width="170" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lg3" value="новый — ETL и аналитическое хранение" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="530" width="170" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="lg4" value="изменённый существующий контейнер" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="65" y="584" width="170" height="44" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="&lt;b&gt;Ключевое:&lt;/b&gt; отчёт не считается в реальном времени — API читает готовые строки витрины. Идентификатор клиента берётся из токена, а не из запроса, поэтому чужой отчёт получить нельзя. Период ограничен водяным знаком ETL." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9f9f9;strokeColor=#999999;fontSize=11;align=left;verticalAlign=top;spacingLeft=8;spacingTop=6;" vertex="1" parent="1">
+          <mxGeometry x="50" y="670" width="200" height="190" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
